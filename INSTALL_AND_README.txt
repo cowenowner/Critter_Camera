@@ -1,9 +1,25 @@
 Much of the inspiration and the code came from the pyimagesearch.com website. Check this site out. It's fantastic, but don't do the pyimagesearch websites recommendation of compiling opencv on the raspberry - too much time and I could not get it to work. 
+
 I've simplified the code so that it is more focussed for critter detection.
 
 Here are the steps:
 
+Step 0: 
+
+Install hardware. 
+1) Plug in the raspicam using the ribbon cable with the blue part of the ribbon facing away from the HDMI port.
+2) Plug in a second USB camera - I got an inexpensive outdoor camera. This is the one I purchased for $41
+ELP 1megapixel Day Night Vision Indoor&outdoor Cctv Usb Dome Housing Camera
+
+Once you get the cameras working and the code below working, then you can make the outdoor housing for the camera. I just used a $15 plastic Stanley toolbox from Ace hardware - it worked GREAT as a water proof case for the raspberry pi, a powered usb hub, and power connectors (plenty of space and easy to cut with a Dremel). Here is the link...
+http://www.acehardware.com/product/index.jsp?productId=11697110&cp=2568443.2568450.2628082.2629228
+
+
 Step 1:
+
+Plug your pi into a monitor and mouse/keyboard and log in.
+
+Log your pi into your wifi network. I'll let you figure this out. Plenty of help on the web.
 
 Determine the IP address of your raspberry pi - say with an ip scanner. Use this to putty or ftp or vnc over.
 
@@ -32,12 +48,24 @@ sudo pip install dropbox # only if you will use dropbox (I don't recommend it an
 sudo apt-get install vnc # only if you want to connect remotely to the raspberry
 sudo apt-get links2 # not necessary unless you do some of the fancy things below.
 
-
 Step 3: 
+
+Check out the camera - make sure it's acquiring video...
+
+For the raspicamera...
+
+raspivid -o out.h264
+
+For a connected usb camera...
+
+fswebcam image.jpg
+
+
+Step 4: 
 
 Now that this is done, ftp all of the python the files over from your pc - say with Filezilla. I put everything in /home/pi/Src/Python/Critter_Camera 
 
-Steph 4: 
+Steph 5: 
 
 set up the cron job so that it starts upon reboot. How do we do this? (need to sudo)
 
@@ -49,7 +77,7 @@ use nano and add these lines to the bottom... I like to reboot in case there is 
 0 17 * * * sudo reboot
 @reboot sudo python /home/pi/Src/Python/Critter_Camera/critter_camera.py --conf /home/pi/Src/Python/Critter_Camera/conf.json > /home/pi/cronlog.txt &
 
-Step 5: 
+Step 6: 
 
 edit json.conf with nano or your favorite editor and be sure the chosen pictures directly path is correct.
 
