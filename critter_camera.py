@@ -2,13 +2,15 @@
 """
 Created on Mon Jul 25 22:19:11 2016
 
-Home surveillance and motion detection with the Raspberry Pi, Python, and one day OpenCVPython
-Code is borrwed heavily from examples on pyimagesearch.com. Check out this site for some great tutorials.
+Back yard wild animal (or person) detection with the Raspberry Pi, Python, and OpenCV
+This code is borrwed heavily from examples on pyimagesearch.com. Check out this site for some great tutorials.
 
 The code from pyimagesearch also allows synchonization with Dropbox. I removed this as windy days 
 can cause your dropbox folder to fill up fast. Instead, I just ftp the images over WiFi.
 
-@author: cowen and inspired heavily from pyimagesearch.com
+@author: Stephen Cowen and inspired heavily from pyimagesearch.com
+scowen [at ] email.arizona.edu
+
 """
 
 # import the necessary packages
@@ -33,8 +35,6 @@ ap.add_argument("-c", "--conf", required=True,
 	help="path to the JSON configuration file")
 args = vars(ap.parse_args())
 
-# filter warnings, load the configuration and initialize the Dropbox
-# client
 # Initialize variables:
 warnings.filterwarnings("ignore")
 conf = json.load(open(args["conf"]))
@@ -67,7 +67,6 @@ print(fname)
 
 fp = open(fname, 'w+')
 csv = csv.writer( fp )
-#fp.close()
 
 # Allow the camera to warmup, then initialize the average frame, last
 # uploaded timestamp, and frame motion counter
@@ -102,6 +101,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 
 		usbfname = ""
 		raspfname = ""
+		# Do different things if it's day or night
 		if t >= 17 or t < 7:
 			# Night time
 			raspfname = pictures_dir + 'raspicam_night_{}.jpg'.format(timestr)
@@ -112,6 +112,9 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 			usbfname =  "%susbcam1_night_%s.jpg" % (pictures_dir,timestr)
 			print "USB: " + usbfname
 			call(["fswebcam","-r","640x360","-d","/dev/video0","--no-banner",usbfname])
+			# The following is a work-around for a problem with the USB camera: Sometimes it produces all-black images.
+			# The following code looks for very small files (indicating that nothing was recorded) and deletes them
+			# to save you the hassle.
 	  		if (os.path.getsize(raspfname) < 17000):
 				# This suggests an error- an all black image.
 				csv.writerow([ts,-1,-1,raspfname])
@@ -141,9 +144,10 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 			#	toggle_camera = 0
 
 		if (totalCounter % 10 == 0):
+			# This file is useful as it is the image used to detect motion (after blurring and cropping)
 			cv2.imwrite(pictures_dir + 'gray.jpg'.format(timestr),oldgray)
 
-		captureImage = False
+		captureImage = False # reset the detection 
 	
 	# resize the frame, convert it to grayscale, and blur it
 	frame = imutils.resize(frame, width=500)
@@ -207,7 +211,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 		
 	# check to see if the frames should be displayed to screen
 	if conf["show_video"]:
-		# display the security feed
+		# display the camera feed
 		gray[0:20,:] = 0
 		cv2.imshow("Bobcat Camera", gray)
 
