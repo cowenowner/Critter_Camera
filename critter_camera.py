@@ -60,9 +60,9 @@ rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
 timestamp = datetime.datetime.now()
 ts = timestamp.strftime("%h%d%H")
 
-fname = '/home/pi/Src/Python/VT_Video_Tracking/threshold_file' + ts + '.csv'
+#fname = '/home/pi/Src/Python/VT_Video_Tracking/threshold_file' + ts + '.csv'
 #fname = 'threshold_file' + ts + '.csv'
-fname = '/home/pi/Src/Python/VT_Video_Tracking/threshold_file%s.csv' % (ts)
+fname = conf["pictures_dir"] + 'threshold_file%s.csv' % (ts)
 print(fname)
 
 fp = open(fname, 'w+')
@@ -130,7 +130,7 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
 				# This suggests an error- an all black image.
 				csv.writerow([ts,-1,-1,raspfname])
 				os.remove(raspfname)
-			# usbfname = "/home/pi/Src/Python/VT_Video_Tracking/Pictures/usbcam1_day{}.jpg".format(timestr)
+			# usbfname = pictures_dir + "/usbcam1_day{}.jpg".format(timestr)
 			#call(["fswebcam","-r","1280x720","-d","/dev/video0","--no-banner",usbfname]) # this MAY (or may not) cause the pi to crash randomly if during the day - maybe the wind and catching too many things?
 			#if toggle_camera == 0:
 			#	call(["fswebcam","-r","1280x720","-d","/dev/video0","--no-banner","/home/pi/Src/Python/VT_Video_Tracking/Pictures/usbcam1_{}.jpg".format(timestr)])
