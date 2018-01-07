@@ -1,15 +1,32 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul 25 22:19:11 2016
-
 Back yard wild animal (or person) detection with the Raspberry Pi, Python, and OpenCV
-This code is borrwed heavily from examples on pyimagesearch.com. Check out this site for some great tutorials.
+This code is borrowed heavily from examples on pyimagesearch.com. Check out this site 
+for some great tutorials.
 
-The code from pyimagesearch also allows synchonization with Dropbox. I removed this as windy days 
-can cause your dropbox folder to fill up fast. Instead, I just ftp the images over WiFi.
+The code requires the conf.json file (this directory). Specify the file on the call 
+to critter_camera.py using the --conf or -c switches.
 
-@author: Stephen Cowen and inspired heavily from pyimagesearch.com
+# HOW TO RUN:
+
+python critter_camera.py -c json.conf
+
+Or, if permissions are an issue (for some strange reason)...
+
+sudo python critter_camera.py -c json.conf
+
+The GitHub site is
+
+www.github.com/cowenowner/Critter_Camera
+
+
+The code from pyimagesearch also allows synchonization with Dropbox. I removed this 
+as windy days can cause your dropbox folder to fill up fast. Instead, I just ftp the 
+images over WiFi.
+
+@author: Stephen Cowen and inspired from pyimagesearch.com
 scowen [at ] email.arizona.edu
+Created on Mon Jul 25 22:19:11 2016
 
 """
 
@@ -56,12 +73,10 @@ camera = PiCamera()
 camera.resolution = tuple(conf["resolution"])
 camera.framerate = conf["fps"]
 rawCapture = PiRGBArray(camera, size=tuple(conf["resolution"]))
-# Open a text file for writing
+# Open a text file for writing threshold values.
 timestamp = datetime.datetime.now()
 ts = timestamp.strftime("%h%d%H")
 
-#fname = '/home/pi/Src/Python/VT_Video_Tracking/threshold_file' + ts + '.csv'
-#fname = 'threshold_file' + ts + '.csv'
 fname = conf["pictures_dir"] + 'threshold_file%s.csv' % (ts)
 print(fname)
 
